@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { Spinner } from '@/components/ui/spinner';
 
 const operations = [
   'Collar Making',
@@ -224,7 +225,28 @@ export function EntriesPage() {
     fetchEntries();
   };
 
-  if (loading) return <p className="p-6">Loading...</p>;
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+          <Spinner className="size-5 text-primary" />
+          <div>
+            <p className="text-sm font-semibold text-gray-900">Loading entries</p>
+            <p className="text-xs text-gray-500">Please wait while we fetch the latest data.</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 animate-pulse">
+          <div className="h-10 bg-gray-100 rounded-lg mb-4" />
+          <div className="space-y-3">
+            <div className="h-12 bg-gray-100 rounded-lg" />
+            <div className="h-12 bg-gray-100 rounded-lg" />
+            <div className="h-12 bg-gray-100 rounded-lg" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -461,7 +483,7 @@ export function EntriesPage() {
                           }}
                           key={emp.id}
                           className={`px-3 md:px-4 py-2 text-sm md:text-base cursor-pointer transition ${index === selectedEmployeeIndex
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-primary text-white'
                             : 'bg-white text-gray-900 hover:bg-gray-100'
                             }`}
                           onClick={() => {

@@ -43,6 +43,7 @@ export function TopNav({ pageTitle, onToggleSidebar }: TopNavProps) {
           </div>
           <div>
             <p className="text-sm font-medium text-gray-800">{user?.name || 'User'}</p>
+            <p className="text-sm font-medium text-gray-800">{user?.email || 'User'}</p>
           </div>
         </div>
       </div>
