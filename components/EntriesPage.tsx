@@ -38,6 +38,7 @@ export function EntriesPage() {
   const [filteredEmployees, setFilteredEmployees] = useState<any[]>([]);
   const [showEmployeeDropdown, setShowEmployeeDropdown] = useState(false);
   const [selectedEmployeeIndex, setSelectedEmployeeIndex] = useState(-1);
+  const dropdownItemsRef = React.useRef<(HTMLDivElement | null)[]>([]);
 
   const [form, setForm] = useState({
     date: new Date().toISOString().split('T')[0],
@@ -118,13 +119,25 @@ export function EntriesPage() {
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedEmployeeIndex((prev) =>
-          prev < filteredEmployees.length - 1 ? prev + 1 : prev
-        );
+        setSelectedEmployeeIndex((prev) => {
+          const newIndex = prev < filteredEmployees.length - 1 ? prev + 1 : prev;
+          setTimeout(() => {
+            dropdownItemsRef.current[newIndex]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 0);
+          return newIndex;
+        });
         break;
       case 'ArrowUp':
         e.preventDefault();
-        setSelectedEmployeeIndex((prev) => (prev > 0 ? prev - 1 : -1));
+        setSelectedEmployeeIndex((prev) => {
+          const newIndex = prev > 0 ? prev - 1 : -1;
+          setTimeout(() => {
+            if (newIndex >= 0) {
+              dropdownItemsRef.current[newIndex]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          }, 0);
+          return newIndex;
+        });
         break;
       case 'Enter':
         e.preventDefault();
@@ -440,13 +453,16 @@ export function EntriesPage() {
                   />
 
                   {showEmployeeDropdown && filteredEmployees.length > 0 && (
-                    <div className="absolute w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto z-[9999] pointer-events-auto" style={{ maxHeight: '300px', overscrollBehavior: 'contain' }}>
+                    <div className="absolute w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-80 overflow-y-auto z-50" style={{ overscrollBehavior: 'contain' }}>
                       {filteredEmployees.map((emp, index) => (
                         <div
+                          ref={(el) => {
+                            if (el) dropdownItemsRef.current[index] = el;
+                          }}
                           key={emp.id}
                           className={`px-3 md:px-4 py-2 text-sm md:text-base cursor-pointer transition ${index === selectedEmployeeIndex
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-white text-gray-900 hover:bg-gray-100'
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white text-gray-900 hover:bg-gray-100'
                             }`}
                           onClick={() => {
                             setForm({
