@@ -37,6 +37,7 @@ export function EntriesPage() {
   const [employeeList, setEmployeeList] = useState<any[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<any[]>([]);
   const [showEmployeeDropdown, setShowEmployeeDropdown] = useState(false);
+  const [selectedEmployeeIndex, setSelectedEmployeeIndex] = useState(-1);
 
   const [form, setForm] = useState({
     date: new Date().toISOString().split('T')[0],
@@ -96,6 +97,7 @@ export function EntriesPage() {
 
   const handleEmployeeSearch = (value: string) => {
     setForm({ ...form, employee_name: value });
+    setSelectedEmployeeIndex(-1);
 
     if (!value) {
       setShowEmployeeDropdown(false);
@@ -108,6 +110,44 @@ export function EntriesPage() {
 
     setFilteredEmployees(filtered);
     setShowEmployeeDropdown(true);
+  };
+
+  const handleEmployeeKeyDown = (e: React.KeyboardEvent) => {
+    if (!showEmployeeDropdown || filteredEmployees.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedEmployeeIndex((prev) =>
+          prev < filteredEmployees.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedEmployeeIndex((prev) => (prev > 0 ? prev - 1 : -1));
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedEmployeeIndex >= 0) {
+          const emp = filteredEmployees[selectedEmployeeIndex];
+          setForm({
+            ...form,
+            employee_name: emp.name,
+            employee_id: emp.employee_number,
+            operation: emp.operation,
+          });
+          setShowEmployeeDropdown(false);
+          setSelectedEmployeeIndex(-1);
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setShowEmployeeDropdown(false);
+        setSelectedEmployeeIndex(-1);
+        break;
+      default:
+        break;
+    }
   };
 
   const handleSubmit = async () => {
@@ -387,29 +427,32 @@ export function EntriesPage() {
 
                 <div className="relative">
                   <input
-                    placeholder="Employee Name"
+                    placeholder="Employee Name (Type to search)"
                     value={form.employee_name}
                     onChange={(e) => handleEmployeeSearch(e.target.value)}
+                    onFocus={() => {
+                      if (form.employee_name) {
+                        setShowEmployeeDropdown(true);
+                      }
+                    }}
+                    onKeyDown={handleEmployeeKeyDown}
                     className="w-full border border-gray-300 p-2 md:p-3 rounded text-sm md:text-base"
                   />
 
                   {showEmployeeDropdown && filteredEmployees.length > 0 && (
                     <div className="absolute w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-40 overflow-y-auto z-50">
-                      {filteredEmployees.map((emp) => (
+                      {filteredEmployees.map((emp, index) => (
                         <div
                           key={emp.id}
-                          onClick={() => {
-                            setForm({
-                              ...form,
-                              employee_name: emp.name,
-                              employee_id: emp.employee_number,
-                              operation: emp.operation,
-                            });
-                            setShowEmployeeDropdown(false);
-                          }}
-                          className="px-3 md:px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm md:text-base"
+                          className={`px-3 md:px-4 py-2 text-sm md:text-base ${index === selectedEmployeeIndex
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-white text-gray-900'
+                            }`}
                         >
-                          {emp.name} ({emp.employee_number}) - {emp.operation}
+                          <div className="font-semibold">{emp.name}</div>
+                          <div className="text-xs opacity-80">
+                            ID: {emp.employee_number} | {emp.operation}
+                          </div>
                         </div>
                       ))}
                     </div>
