@@ -440,14 +440,24 @@ export function EntriesPage() {
                   />
 
                   {showEmployeeDropdown && filteredEmployees.length > 0 && (
-                    <div className="absolute w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-40 overflow-y-auto z-50">
+                    <div className="absolute w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto z-[9999] pointer-events-auto" style={{ maxHeight: '300px', overscrollBehavior: 'contain' }}>
                       {filteredEmployees.map((emp, index) => (
                         <div
                           key={emp.id}
-                          className={`px-3 md:px-4 py-2 text-sm md:text-base ${index === selectedEmployeeIndex
+                          className={`px-3 md:px-4 py-2 text-sm md:text-base cursor-pointer transition ${index === selectedEmployeeIndex
                               ? 'bg-blue-500 text-white'
-                              : 'bg-white text-gray-900'
+                              : 'bg-white text-gray-900 hover:bg-gray-100'
                             }`}
+                          onClick={() => {
+                            setForm({
+                              ...form,
+                              employee_name: emp.name,
+                              employee_id: emp.employee_number,
+                              operation: emp.operation,
+                            });
+                            setShowEmployeeDropdown(false);
+                            setSelectedEmployeeIndex(-1);
+                          }}
                         >
                           <div className="font-semibold">{emp.name}</div>
                           <div className="text-xs opacity-80">
