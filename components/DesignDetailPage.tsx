@@ -21,8 +21,8 @@ const DesignDetailPage = ({ designNo }: any) => {
     const getImageSrc = (src: string) => {
         if (!src) return '';
 
-        if (src.startsWith('http://shikhagarments.soon.it/')) {
-            return src.replace('http://', 'https://');
+        if (src.startsWith('http://') || src.startsWith('https://')) {
+            return `/api/image-proxy?url=${encodeURIComponent(src)}`;
         }
 
         return src;
