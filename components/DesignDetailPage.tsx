@@ -18,6 +18,16 @@ const DesignDetailPage = ({ designNo }: any) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const router = useRouter();
 
+    const getImageSrc = (src: string) => {
+        if (!src) return '';
+
+        if (src.startsWith('http://shikhagarments.soon.it/')) {
+            return src.replace('http://', 'https://');
+        }
+
+        return src;
+    };
+
     const fetchDetail = async () => {
         setLoading(true);
         const res = await fetch(`/api/design/detail?design_no=${designNo}`);
@@ -126,7 +136,7 @@ const DesignDetailPage = ({ designNo }: any) => {
                             {images.map((img, index) => (
                                 <img
                                     key={index}
-                                    src={img}
+                                    src={getImageSrc(String(img))}
                                     alt={`design-${index}`}
                                     onClick={() => {
                                         setActiveIndex(index);
@@ -215,7 +225,7 @@ const DesignDetailPage = ({ designNo }: any) => {
                     {/* 🔥 BIG IMAGE */}
                     {images.length > 0 && (
                         <img
-                            src={images[activeIndex]}
+                            src={getImageSrc(String(images[activeIndex]))}
                             className="max-h-[70vh] max-w-[90%] rounded-xl shadow-lg"
                         />
                     )}
@@ -225,7 +235,7 @@ const DesignDetailPage = ({ designNo }: any) => {
                         {images.map((img, index) => (
                             <img
                                 key={index}
-                                src={img}
+                                src={getImageSrc(String(img))}
                                 onClick={() => setActiveIndex(index)}
                                 className={`w-20 h-20 object-cover rounded-lg cursor-pointer border-2 ${activeIndex === index
                                     ? 'border-white'
