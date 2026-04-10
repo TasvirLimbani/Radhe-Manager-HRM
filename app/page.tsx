@@ -20,7 +20,7 @@ export default function LoginPage() {
   // Redirect if already logged in
   useEffect(() => {
     if (!loading && isLoggedIn) {
-      router.push('/entries');
+      router.push('/employees'); // or dashboard
     }
   }, [isLoggedIn, loading, router]);
 
@@ -42,7 +42,7 @@ export default function LoginPage() {
 
       if (data.status) {
         login(email, password); // or store token
-        router.push("/entries");
+        router.push("/employees");
       } else {
         alert(data.message || "Login failed");
       }

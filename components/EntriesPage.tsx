@@ -3,6 +3,16 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const operations = [
   'Collar Making',
@@ -34,6 +44,7 @@ export function EntriesPage() {
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState<any>(null);
   const [openMenu, setOpenMenu] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
 
   const [employeeList, setEmployeeList] = useState<any[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<any[]>([]);
@@ -79,6 +90,11 @@ export function EntriesPage() {
 
   // 🔥 UPDATED FILTER LOGIC
   const filteredEntries = entries.filter((entry) => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    const employeeName = String(entry.employee_name ?? '').toLowerCase();
+    const designNo = String(entry.design_no ?? '').toLowerCase();
+    const employeeId = String(entry.employee_id ?? '').toLowerCase();
+
     // Filter by date range
     const dateMatches =
       startDate && endDate
@@ -86,12 +102,10 @@ export function EntriesPage() {
         : entry.date === startDate;
 
     // Filter by search query
-    const searchMatches = searchQuery === '' ? true : (
-      entry.employee_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entry.operation.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entry.design_no.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entry.colour_no.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entry.employee_id.toString().includes(searchQuery)
+    const searchMatches = normalizedQuery === '' ? true : (
+      employeeName.includes(normalizedQuery) ||
+      employeeId.includes(normalizedQuery) ||
+      designNo.includes(normalizedQuery)
     );
 
     return dateMatches && searchMatches;
@@ -214,8 +228,6 @@ export function EntriesPage() {
   };
 
   const handleDelete = async (entry: any) => {
-    if (!confirm('Are you sure to delete?')) return;
-
     await fetch(`/api/entries/${entry.id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -223,6 +235,12 @@ export function EntriesPage() {
     });
 
     fetchEntries();
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    await handleDelete(deleteTarget);
+    setDeleteTarget(null);
   };
 
   if (loading) {
@@ -314,6 +332,7 @@ export function EntriesPage() {
           <thead className="bg-primary text-white text-center text-sm">
             <tr>
               <th className="p-3 md:p-4">Date</th>
+              <th className="p-3 md:p-4">ID </th>
               <th className="p-3 md:p-4">Employee</th>
               <th className="p-3 md:p-4">Operation</th>
               <th className="p-3 md:p-4">Design</th>
@@ -329,6 +348,7 @@ export function EntriesPage() {
             {filteredEntries.map((entry) => (
               <tr key={entry.id} className="border-t text-center text-sm hover:bg-gray-50">
                 <td className="p-3 md:p-4">{entry.date}</td>
+                <td className="p-3 md:p-4">{entry.employee_id}</td>
                 <td className="p-3 md:p-4">{entry.employee_name}</td>
                 <td className="p-3 md:p-4">{entry.operation}</td>
                 <td className="p-3 md:p-4">{entry.design_no}</td>
@@ -360,7 +380,7 @@ export function EntriesPage() {
 
                       <button
                         onClick={() => {
-                          handleDelete(entry);
+                          setDeleteTarget(entry);
                           setOpenMenu(null);
                         }}
                         className="block w-full px-4 py-2 text-left text-red-500 hover:bg-red-50 text-sm"
@@ -387,6 +407,10 @@ export function EntriesPage() {
                   <p className="text-gray-700">{entry.date}</p>
                 </div>
                 <div className="text-xs text-gray-600">
+                  <span className="font-semibold text-gray-800">ID</span>
+                  <p className="text-gray-700">{entry.employee_id}</p>
+                </div>
+                <div className="text-xs text-gray-600">
                   <span className="font-semibold text-gray-800">Employee</span>
                   <p className="text-gray-700">{entry.employee_name}</p>
                 </div>
@@ -406,13 +430,14 @@ export function EntriesPage() {
                   <span className="font-semibold text-gray-800">Piece</span>
                   <p className="text-gray-700">{entry.piece}</p>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 pb-3 border-b border-gray-200 mb-3">
                 <div className="text-xs text-gray-600">
                   <span className="font-semibold text-gray-800">Rate</span>
                   <p className="text-gray-700">₹{entry.rate}</p>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 pb-3 border-b border-gray-200 mb-3">
+
                 <div className="text-xs text-gray-600">
                   <span className="font-semibold text-gray-800">Total</span>
                   <p className="font-bold text-primary">₹{entry.total}</p>
@@ -427,7 +452,7 @@ export function EntriesPage() {
                   ✏️ Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(entry)}
+                  onClick={() => setDeleteTarget(entry)}
                   className="flex-1 px-3 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition"
                 >
                   🗑 Delete
@@ -563,6 +588,33 @@ export function EntriesPage() {
           </div>
         )
       }
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent className="sm:max-w-md">
+          <AlertDialogHeader className="text-center sm:text-center">
+            <AlertDialogTitle>Delete entry?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete entry for
+              {' '}
+              {deleteTarget?.employee_name || 'this employee'}
+              {' '}
+              (ID:
+              {' '}
+              {deleteTarget?.employee_id || '-'})
+              .
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center">
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div >
   );
 }

@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     shortcut: '/logo.png',
     apple: [{ url: '/logo1.png' }],
     other: [{ url: '/logo1.png' }],
-    
+
   },
 }
 

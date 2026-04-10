@@ -9,7 +9,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <AuthProvider>
       <AppProvider>
-        <DisableInspect />
+        {/* <DisableInspect /> */}
         {children}
       </AppProvider>
     </AuthProvider>

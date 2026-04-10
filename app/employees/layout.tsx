@@ -3,7 +3,17 @@
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Sidebar } from '@/components/Sidebar';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState, createContext, useContext } from 'react';
+
+const SidebarContext = createContext<{ onToggleSidebar: () => void } | null>(null);
+
+export const useSidebar = () => {
+  const context = useContext(SidebarContext);
+  if (!context) {
+    return { onToggleSidebar: () => { } };
+  }
+  return context;
+};
 
 export default function EmployeesLayout({
   children,
@@ -24,16 +34,20 @@ export default function EmployeesLayout({
     return null;
   }
 
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar
-        currentPage="employees"
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-      />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {children}
+    <SidebarContext.Provider value={{ onToggleSidebar: toggleSidebar }}>
+      <div className="flex h-screen bg-gray-100">
+        <Sidebar
+          currentPage="employees"
+          isOpen={sidebarOpen}
+          onToggle={toggleSidebar}
+        />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {children}
+        </div>
       </div>
-    </div>
+    </SidebarContext.Provider>
   );
 }

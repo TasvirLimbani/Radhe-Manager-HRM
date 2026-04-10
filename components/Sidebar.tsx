@@ -11,6 +11,7 @@ import {
   TrendingUp,
   DollarSign,
   LogOut,
+  PencilRuler,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -25,7 +26,9 @@ export function Sidebar({ currentPage, isOpen = false, onToggle }: SidebarProps)
 
   const navigationItems = [
     // { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-    // { id: 'employees', label: 'Employees', icon: Users, href: '/employees' },
+    { id: 'employees', label: 'Employees', icon: Users, href: '/employees' },
+    { id: 'design', label: 'Design', icon: PencilRuler, href: '/design' },
+
     { id: 'entries', label: 'Work Entries', icon: LogIn, href: '/entries' },
     // { id: 'advances', label: 'Advances', icon: TrendingUp, href: '/advances' },
     // { id: 'salary', label: 'Salary', icon: DollarSign, href: '/salary' },
