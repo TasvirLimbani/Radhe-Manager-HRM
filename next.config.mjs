@@ -64,9 +64,16 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
-  },
-  images: {
-    domains: ["shikhagarments.soon.it"],
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "shikhagarments.soon.it",
+      },
+      {
+        protocol: "https",
+        hostname: "shikhagarments.soon.it",
+      },
+    ],
   },
 };
 
