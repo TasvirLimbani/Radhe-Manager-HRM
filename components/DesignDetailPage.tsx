@@ -101,7 +101,7 @@ const DesignDetailPage = ({ designNo }: any) => {
                 </button>
 
                 {/* 🔥 SUMMARY CARDS */}
-                <div className="grid xl:grid-cols-5 gap-4">
+                <div className="grid xl:grid-cols-5 gap-4 ">
 
                     <div className="bg-white p-5 rounded-xl shadow">
                         <p className="text-gray-500 text-sm">Design No</p>

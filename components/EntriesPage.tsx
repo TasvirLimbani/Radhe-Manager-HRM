@@ -112,7 +112,7 @@ export function EntriesPage() {
   });
 
   const handleEmployeeSearch = (value: string) => {
-    setForm({ ...form, employee_name: value });
+    setForm({ ...form, employee_id: value });
     setSelectedEmployeeIndex(-1);
 
     if (!value) {
@@ -120,9 +120,13 @@ export function EntriesPage() {
       return;
     }
 
-    const filtered = employeeList.filter((emp) =>
-      emp.name.toLowerCase().includes(value.toLowerCase())
-    );
+    const query = value.toLowerCase();
+    const filtered = employeeList.filter((emp) => {
+      const employeeNumber = String(emp.employee_number ?? emp.id ?? '').toLowerCase();
+      const employeeName = String(emp.name ?? '').toLowerCase();
+
+      return employeeNumber.includes(query) || employeeName.includes(query);
+    });
 
     setFilteredEmployees(filtered);
     setShowEmployeeDropdown(true);
@@ -161,7 +165,7 @@ export function EntriesPage() {
           setForm({
             ...form,
             employee_name: emp.name,
-            employee_id: emp.employee_number,
+            employee_id: String(emp.employee_number ?? emp.id ?? ''),
             operation: emp.operation,
           });
           setShowEmployeeDropdown(false);
@@ -305,8 +309,8 @@ export function EntriesPage() {
           onClick={() => {
             setForm({
               date: new Date().toISOString().split('T')[0],
-              employee_name: '',
               employee_id: '',
+              employee_name: '',
               operation: '',
               design_no: '',
               colour_no: '',
@@ -485,13 +489,15 @@ export function EntriesPage() {
                   onChange={(e) => setForm({ ...form, date: e.target.value })}
                   className="w-full border border-gray-300 p-2 md:p-3 rounded text-sm md:text-base" />
 
+
+
                 <div className="relative">
                   <input
-                    placeholder="Employee Name (Type to search)"
-                    value={form.employee_name}
+                    placeholder="Employee ID (Type to search)"
+                    value={form.employee_id}
                     onChange={(e) => handleEmployeeSearch(e.target.value)}
                     onFocus={() => {
-                      if (form.employee_name) {
+                      if (form.employee_id) {
                         setShowEmployeeDropdown(true);
                       }
                     }}
@@ -515,7 +521,7 @@ export function EntriesPage() {
                             setForm({
                               ...form,
                               employee_name: emp.name,
-                              employee_id: emp.employee_number,
+                              employee_id: String(emp.employee_number ?? emp.id ?? ''),
                               operation: emp.operation,
                             });
                             setShowEmployeeDropdown(false);
@@ -532,9 +538,9 @@ export function EntriesPage() {
                   )}
                 </div>
 
-                <input placeholder="Employee ID" value={form.employee_id}
-                  className="w-full border border-gray-300 p-2 md:p-3 rounded text-sm md:text-base" readOnly />
 
+                <input placeholder="Employee Name" value={form.employee_name}
+                  className="w-full border border-gray-300 p-2 md:p-3 rounded text-sm md:text-base" readOnly />
                 <select
                   value={form.operation}
                   onChange={(e) => setForm({ ...form, operation: e.target.value })}

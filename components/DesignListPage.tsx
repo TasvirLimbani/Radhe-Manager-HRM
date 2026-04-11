@@ -142,6 +142,7 @@ const DesignPage = () => {
         setEditData(entry);
         setForm({
             date: entry.date,
+            color: entry.color,
             design_number: entry.design_number,
             piece: entry.piece,
         });
@@ -153,6 +154,7 @@ const DesignPage = () => {
             const formData = new FormData();
 
             formData.append('design_number', form.design_number);
+                formData.append('color', form.color);
             formData.append('piece', form.piece);
             formData.append('date', form.date);
 
@@ -331,7 +333,9 @@ const DesignPage = () => {
                             <thead className="bg-gradient-to-r from-primary to-primary/80 text-white">
                                 <tr>
                                     <th className="px-6 py-4">Date</th>
+                                   
                                     <th className="px-6 py-4">Design No</th>
+                                     <th className="px-6 py-4">Color</th>
                                     <th className="px-6 py-4">Total Piece</th>
                                     <th className="px-6 py-4">OutPut Piece</th>
                                     <th className="px-6 py-4">Remaining Piece</th>
@@ -350,9 +354,11 @@ const DesignPage = () => {
                                         className="hover:bg-gray-50 cursor-pointer transition"
                                     >
                                         <td className="px-6 py-4">{item.date}</td>
+
                                         <td className="px-6 py-4 font-semibold text-primary">
                                             {item.design_number}
                                         </td>
+                                        <td className="px-6 py-4">{item.color}</td>
                                         <td className="px-6 py-4">{item.piece}</td>
                                         <td className="px-6 py-4">{item.output_piece}</td>
                                         <td className="px-6 py-4 font-bold">
@@ -426,6 +432,10 @@ const DesignPage = () => {
                                         <p className="text-gray-700">{item.design_number}</p>
                                     </div>
                                     <div className="text-xs text-gray-600">
+                                        <span className="font-semibold text-gray-800">Color</span>
+                                        <p className="text-gray-700">{item.color}</p>
+                                    </div>
+                                    <div className="text-xs text-gray-600">
                                         <span className="font-semibold text-gray-800">Total Piece</span>
                                         <p className="text-gray-700">{item.piece}</p>
                                     </div>
@@ -492,7 +502,10 @@ const DesignPage = () => {
                                     value={form.design_number}
                                     onChange={(e) => setForm({ ...form, design_number: e.target.value })}
                                     className="w-full border p-2.5 rounded text-sm md:text-base" />
-
+                                <input placeholder="Color"
+                                    value={form.color}
+                                    onChange={(e) => setForm({ ...form, color: e.target.value })}
+                                    className="w-full border p-2.5 rounded text-sm md:text-base" />
                                 <input placeholder="Piece"
                                     value={form.piece}
                                     onChange={(e) => setForm({ ...form, piece: e.target.value })}
