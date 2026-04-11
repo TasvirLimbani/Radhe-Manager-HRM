@@ -26,8 +26,9 @@ const operations = [
   'Side Munda',
   'Side Pocket',
   'Bottom',
-  'Press',
   'Gaj Button',
+  'Press',
+
 ];
 
 export function EntriesPage() {
